@@ -7,66 +7,98 @@ import Data.List
 -}
 
 -- a)
-not b = case b of
-    True -> False
-	False -> True
+notA b = case b of
+          True -> False
+          False -> True
 
 -- b)
-in [x]         =  []
-in (x:xs)      =  x : in xs
-in []          =  error "empty list"
+inA [x]         =  []
+inA (x:xs)      =  x : inA xs
+inA []          =  error "empty list"
 
 -- c)
-Length []        =  0
-Length (_:l)     =  1 + Length l
+lengthA []        =  0
+lengthA (_:l)     =  1 + lengthA l
 
 -- d)
-list123 = (1 : 2) : 3 : []
+list123 = 1 : 2 : 3 : []
 
 -- e)
 []     ++! ys = ys
 (x:xs) ++! ys = x : xs ++! ys
 
 -- f)
-addToTail x xs = map +x tail xs
+addToTail x xs = map (+x) (tail xs)
 
 -- g)
-listmin xs = head . sort xs
+listmin xs = (head . sort) xs
 
 -- h) (*)
 smap f [] = []
 smap f [x] = [f x]
-smap f (x:xs) = f x : smap (smap f) xs
+smap f (x:xs) = f x : (smap f xs)
+
+
+-- 2. Definir las siguientes funciones y determinar su tipo:
+--
+-- a) five, que dado cualquier valor, devuelve 5
+
+five :: a -> Int
+five _ = 5
+
+-- b) apply, que toma una función y un valor, y devuelve el resultado de
+-- aplicar la función al valor dado
+
+apply :: (a -> b) -> a -> b
+apply f a = f a
+
+-- c) ident, la función identidad
+
+ident :: a -> a
+ident x = x
+
+-- d) first, que toma un par ordenado, y devuelve su primera componente
+
+first :: (a,b) -> a
+first (x, _) = x
+
+-- e) derive, que aproxima la derivada de una función dada en un punto dado
+
+-- TODO
+
+-- f) sign, la función signo
+
+sign :: Int -> Int
+sign x
+  | x > 0 = 1
+  | x < 0 = -1
+  | otherwise = 0
+
+-- g) vabs, la función valor absoluto (usando sign y sin usarla)
+
+vabs :: Int -> Int
+vabs x = x * (sign x)
+-- TODO: Sin usar sign
+
+-- h) pot, que toma un entero y un número, y devuelve el resultado de
+-- elevar el segundo a la potencia dada por el primero
+
+pot :: (Num a) => Int -> a -> a
+pot e b = if e == 0 then 1 else b * (pot (e-1) b)
+
+-- i) xor, el operador de disyunción exclusiva
+--TODO
+-- j) max3, que toma tres números enteros y devuelve el máximo entre llos
+
+max3 :: Int -> Int -> Int -> Int
+max3 a b c = max a (max b c)
+
+-- k) swap, que toma un par y devuelve el par con sus componentes invertidas
+
+swap :: (a,b) -> (b,a)
+swap (x,y) = (y,x)
 
 {-
-2. Definir las siguientes funciones y determinar su tipo:
-
-a) five, que dado cualquier valor, devuelve 5
-
-b) apply, que toma una función y un valor, y devuelve el resultado de
-aplicar la función al valor dado
-
-c) ident, la función identidad
-
-d) first, que toma un par ordenado, y devuelve su primera componente
-
-e) derive, que aproxima la derivada de una función dada en un punto dado
-
-f) sign, la función signo
-
-g) vabs, la función valor absoluto (usando sign y sin usarla)
-
-h) pot, que toma un entero y un número, y devuelve el resultado de
-elevar el segundo a la potencia dada por el primero
-
-i) xor, el operador de disyunción exclusiva
-
-j) max3, que toma tres números enteros y devuelve el máximo entre llos
-
-k) swap, que toma un par y devuelve el par con sus componentes invertidas
--}
-
-{- 
 3) Definir una función que determine si un año es bisiesto o no, de
 acuerdo a la siguiente definición:
 
@@ -76,6 +108,8 @@ de cuatro. (Diccionario de la Real Academia Espaola, 22ª ed.)
 
 ¿Cuál es el tipo de la función definida?
 -}
+
+--TODO
 
 {-
 4)
@@ -93,36 +127,57 @@ expresión sea válida:
 
 -}
 
+(*$) :: [Int] -> Int -> [Int]
+--(*$) [] _ = []
+--(*$) (x:xs) a = (a * x) : (xs *$ a)
+
+(*$) xs a = map (*a) xs
+
 v = [1, 2, 3] *$ 2 *$ 4
 
 
-{-
-5) Definir las siguientes funciones usando listas por comprensión:
 
-a) 'divisors', que dado un entero positivo 'x' devuelve la
-lista de los divisores de 'x' (o la lista vacía si el entero no es positivo)
+-- 5) Definir las siguientes funciones usando listas por comprensión:
+--
+-- a) 'divisors', que dado un entero positivo 'x' devuelve la
+-- lista de los divisores de 'x' (o la lista vacía si el entero no es positivo)
 
-b) 'matches', que dados un entero 'x' y una lista de enteros descarta
-de la lista los elementos distintos a 'x'
+divisors :: Int -> [Int]
+divisors x = [i | i <- [1..x], mod x i == 0]
+  -- | x > 0 = [i | i <- [1..x], mod x i == 0]
+  -- | otherwise = []
 
-c) 'cuadrupla', que dado un entero 'n', devuelve todas las cuadruplas
-'(a,b,c,d)' que satisfacen a^2 + b^2 = c^2 + d^2,
-donde 0 <= a, b, c, d <= 'n'
+-- b) 'matches', que dados un entero 'x' y una lista de enteros descarta
+-- de la lista los elementos distintos a 'x'
 
-(d) 'unique', que dada una lista 'xs' de enteros, devuelve la lista
-'xs' sin elementos repetidos
--}
+matches :: Int -> [Int] -> [Int]
+matches x es = [i | i <- es, i == x]
+
+-- c) 'cuadrupla', que dado un entero 'n', devuelve todas las cuadruplas
+-- '(a,b,c,d)' que satisfacen a^2 + b^2 = c^2 + d^2,
+-- donde 0 <= a, b, c, d <= 'n'
+--TODO (que paja)
+-- (d) 'unique', que dada una lista 'xs' de enteros, devuelve la lista
+-- 'xs' sin elementos repetidos
+
 
 unique :: [Int] -> [Int]
 unique xs = [x | (x,i) <- zip xs [0..], not (elem x (take i xs))]
 
-{- 
+{-
 6) El producto escalar de dos listas de enteros de igual longitud
 es la suma de los productos de los elementos sucesivos (misma
 posición) de ambas listas.  Definir una función 'scalarProduct' que
 devuelva el producto escalar de dos listas.
 
 Sugerencia: Usar las funciones 'zip' y 'sum'. -}
+
+scalarProduct :: [Int] -> [Int] -> Int
+-- scalarProduct as bs = let ps = zip as bs
+--                           zs = map (\(a,b) -> a*b) ps
+--                       in sum zs
+
+scalarProduct as bs = sum (map (\(a,b) -> a*b) (zip as bs))
 
 {-
 7) Definir mediante recursión explícita
