@@ -1,12 +1,25 @@
+module Practica2 where
+
+import Data.List
+
+
 -- ~ Ejercicio 1: Dar el tipo completo de las siguientes funciones
 
 -- ~ a) test f x = f x == x + 2
+test :: (Num a, Eq a) => (a -> a) -> a -> Bool 
+test f x = f x == x + 2
 
--- ~ b) esMenor y z =  y < z
+-- ~ b) esMenor y z = y < z
+esMenor :: Ord a => a -> a -> Bool
+esMenor y z = y < z
 
 -- ~ c) eq a b = a == b
+eq :: Eq a => a -> a -> Bool
+eq a b = a == b
 
 -- ~ d) showVal x = "Valor: " ++ show x
+showVal :: Show a => a -> [Char]
+showVal x = "Valor: " ++ show x
 
 
 -- ~ Ejercicio 2: Dar el tipo de las siguientes operaciones y explicar su propósito
@@ -78,47 +91,48 @@
 -- ~ Ejercicio 6: Pasar de notación Haskell a notación de funciones anónimas (llamada notación lambda)
 
 -- ~ a) smallest, definida por
-    smallest (x, y, z) | x <= y ∧ x <= z = x
-                       | y <= x ∧ y <= z = y
-                       | z <= x ∧ z <= y = z
+smallest (x, y, z) | x <= y && x <= z = x
+                   | y <= x && y <= z = y
+                   | z <= x && z <= y = z
 
 -- ~ b) 
-    second x = \x -> x
+second x = \x -> x
     
 -- ~ c) andThen, definida por
-    andThen True y  = y
-    andThen False y = False
+andThen True y  = y
+andThen False y = False
 
 -- ~ d) 
-    twice f x = f (f x )
+twice f x = f (f x )
 
 -- ~ e) 
-    flip f x y = f y x
+flip f x y = f y x
 
 -- ~ f) 
-    inc = (+1)
+inc = (+1)
     
 -- ~ Ejercicio 7: Pasar de notación lambda a notación Haskell
 
 -- ~ a) 
-    iff = \x -> \y -> if x then not y else y
+iff = \x -> \y -> if x then not y else y
 
 -- ~ b) 
-    alpha = \x -> x
+alpha = \x -> x
     
     
 -- ~ Ejercicio 8: Dados los tipos de f y g, y la definicion de h: 
-f :: c -> d
-g :: a -> b -> c
 
-h x y = f (g x y)
+-- ~ f :: c -> d
+-- ~ g :: a -> b -> c
+
+-- ~ h x y = f (g x y)
 
 -- ~ Determinar el tipo de h e indicar cuáles de las siguientes definiciones de h 
 -- ~ son equivalentes a la dada:
 
-h = f . g
-h x = f . (g x )
-h x y = (f . g) x y
+-- ~ h = f . g
+-- ~ h x = f . (g x )
+-- ~ h x y = (f . g) x y
 
 -- ~ Dar el tipo de la funcion (.)
 
@@ -157,14 +171,15 @@ h x y = (f . g) x y
 -- ~ (puede suponer que sqrt :: Float -> Float)
 
 -- ~ a) 
-    modulus = sqrt . sum . map (^2)
+modulus = sqrt . sum . map (^2)
 
 -- ~ b) 
-    vmod []       = []
-    vmod (v : vs) = modulus v : vmod vs
+vmod []       = []
+vmod (v : vs) = modulus v : vmod vs
     
 
 -- ~ Ejercicio 12: Dado el siguiente tipo para representar números binarios:
+
 type NumBin = [Bool]
 
 -- ~ donde el valor False representa el número 0 y True el 1. Definir las siguientes operaciones 
