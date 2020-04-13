@@ -25,17 +25,28 @@ showVal x = "Valor: " ++ show x
 -- ~ Ejercicio 2: Dar el tipo de las siguientes operaciones y explicar su propósito
 
 -- ~ a) (+5)
+a :: Num a => a -> a
+a = (+5)
 
 -- ~ b) (0<)
+b :: (Num a, Ord a) => a -> Bool
+b = (0<)
 
 -- ~ c) ('a':)
+c :: [Char] -> [Char]
+c = ('a':)
 
 -- ~ d) (++"\n")
+d :: [Char] -> [Char]
+d = (++"\n")
 
 -- ~ e) filter (==7)
+e :: (Eq a, Num a) => [a] -> [a]
+e = filter (==7)
 
 -- ~ f) map (++[1])
-
+f :: (Num a) => [[a]] -> [[a]]
+f = map (++[1])
 
 -- ~ Ejercicio 3: Dar al menos dos ejemplos de funciones que tengan el tipo indicado en cada caso:
 
@@ -65,28 +76,36 @@ showVal x = "Valor: " ++ show x
 -- ~ es sintáctico o de tipos:
 
 -- ~ a) if true then false else true where false = True ; true = False
+-- ~ Valor que devuelve: False
 
 -- ~ b) if if then then else else
+-- ~ Error sintactico: if-then-else espera bool como 1° arg y dos sentencias que seguir como 2° y 3° argumento.
 
 -- ~ c) False == (5>=4)
+-- ~ Valor devuelto: False
 
 -- ~ d) 1 < 2 < 3
+-- ~ Error sintactico: evaluar < devuelve un valor Bool. Volver a evaluar Bool < Int es un error
 
 -- ~ e) 1 + if ('a' < 'z') then -1 else 0
+-- ~ Valor devuelto: 0
 
 -- ~ f) if fst p then fst p else snd p where p = (True,2)
+-- ~ Error de tipo: se enoja con el valor 2, pues los valores de THEN y ELSE deben ser del mismo tipo
 
 -- ~ g) if fst p then fst p else snd p where p = (True,False)
-
+-- ~ Valor devuelto: True
 
 -- ~ Ejercicio 5: Reescribir cada una de las siguientes definiciones sin usar let, where o if 
 
--- ~ a) f x = let (y, z ) = (x , x ) in y
+-- ~ a) f x = let (y, z) = (x , x) in y
+f' = id
 
 -- ~ b) greater (x , y) = if x > y then True else False
+greater (x,y) = x > y
 
 -- ~ c) f (x , y) = let z = x + y in g (z , y) where g (a, b) = a − b
-
+f'' = fst
 
 -- ~ Ejercicio 6: Pasar de notación Haskell a notación de funciones anónimas (llamada notación lambda)
 
@@ -116,8 +135,12 @@ inc = (+1)
 -- ~ a) 
 iff = \x -> \y -> if x then not y else y
 
+iff' a b = if a then not b else b 
+
 -- ~ b) 
 alpha = \x -> x
+
+alpha' x = x
     
     
 -- ~ Ejercicio 8: Dados los tipos de f y g, y la definicion de h: 
