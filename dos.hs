@@ -2,7 +2,6 @@ module Practica2 where
 
 import Data.List
 
-
 -- ~ Ejercicio 1: Dar el tipo completo de las siguientes funciones
 
 -- ~ a) test f x = f x == x + 2
@@ -85,7 +84,8 @@ f = map (++[1])
 -- ~ Valor devuelto: False
 
 -- ~ d) 1 < 2 < 3
--- ~ Error sintactico: evaluar < devuelve un valor Bool. Volver a evaluar Bool < Int es un error
+-- ~ Error sintactico: pues es infix y no sabe si es izquierda o derecha
+-- ~ si fuera con parentesis, seria error de tipo pues evaluar < devuelve un valor Bool. Volver a evaluar Bool < Int es un error
 
 -- ~ e) 1 + if ('a' < 'z') then -1 else 0
 -- ~ Valor devuelto: 0
@@ -183,7 +183,20 @@ alpha' x = x
 -- ~ Ejercicio 9: La función zip3 zipea 3 listas. Dar una definición recursiva de la función 
 -- ~ y otra definición con el mismo tipo que utilice la función zip. ¿Qué ventajas y desventajas 
 -- ~ tiene cada definición?
+-- ~ zip3 :: [a] -> [b] -> [c] -> [(a,b,c)] ?? Nop, por definicion de abajo te queda [(a,(b,c)]
+zip3'' x y z = zip x (zip y z)
 
+-- ~ Esta definicion de zip3 es facil de codear, pero no resulta en la estructura de lista que uno esperaría
+-- ~ Por otro lado, si las listas "y" y "z" son más largas que la lista "x", tardaran más tiempo que el necesario
+
+zip3' :: [a] -> [b] -> [c] -> [(a,b,c)]
+zip3' [] _ _ = []
+zip3' _ [] _ = []
+zip3' _ _ [] = []
+zip3' (x:xs) (y:ys) (z:zs) = (x,y,z) : (zip3' xs ys zs)
+
+-- ~ Esta definicion de zip3 requiere que se estudien todos los casos para su desarrollo, pero resulta en 
+-- ~ una estructura esperada. Cabe mencionar que trabaja en el largo de la lista mas corta
 
 -- ~ Ejercicio 10: Indicar bajo qué suposiciones tienen sentido las siguientes ecuaciones. 
 -- ~ Para aquellas que tengan sentido, indicar si son verdaderas y en caso de no serlo modificar 
@@ -230,9 +243,28 @@ type NumBin = [Bool]
 -- ~ tomando como convención una representación Little-Endian (i.e. el primer elemento de las 
 -- ~ lista de dı́gitos es el dı́gito menos significativo del número representado).
 
+xor False True = True
+xor True False = True
+xor _ _        = False
+
+
+acumular :: Bool -> Bool -> Bool -> Bool
+acumular a b c = (a && b) || ((a || b) && c)
+
 -- ~ a) suma binaria
 
+sumaBinaria :: NumBin -> NumBin -> NumBin
+sumaBinaria xs ys = sumBin xs ys False
+
+sumBin :: NumBin -> NumBin -> Bool -> NumBin
+sumBin [] [] True = [True]
+sumBin [] [] False = []
+sumBin (x:xs) [] acum = if (xor x acum) then (True:xs) else False : (sumBin xs [] acum)
+sumBin [] (x:xs) acum = if (xor x acum) then (True:xs) else False : (sumBin [] xs acum)
+sumBin (x:xs) (y:ys) acum = (xor acum (xor x y)) : (sumBin xs ys (acumular x y acum))
+
 -- ~ b) producto binario
+
 
 -- ~ c) cociente y resto de la división por dos
 
