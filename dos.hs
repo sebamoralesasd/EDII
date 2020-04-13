@@ -235,3 +235,6 @@ type NumBin = [Bool]
 -- ~ por comprensión defina una función scalarproduct que devuelva el producto escalar de dos listas.
 
 -- ~ Sugerencia: Usar las funciones zip y sum.
+
+productupla (x,y) = x * y
+scalarProduct xs ys = sum (map productupla (zip xs ys))
