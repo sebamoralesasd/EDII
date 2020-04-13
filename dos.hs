@@ -114,21 +114,41 @@ smallest (x, y, z) | x <= y && x <= z = x
                    | y <= x && y <= z = y
                    | z <= x && z <= y = z
 
+-- ~ Primer intento, con varios argumentos
+smallest' :: Ord a => a -> a -> a -> a
+smallest' = (\x -> (\y -> (\z -> if (x <= y) then (if (x <= z) then x else z) else (if (y <= z) then y else z))))
+
+-- ~ Segundo intento, con una tupla como argumento
+smallest'' :: Ord a => (a,a,a) -> a
+smallest'' = (\(x,y,z) -> if (x <= y) then (if (x <= z) then x else z) else (if (y <= z) then y else z))
+
 -- ~ b) 
 second x = \x -> x
+second' = \x -> \y -> y
     
 -- ~ c) andThen, definida por
 andThen True y  = y
 andThen False y = False
 
+andThen' = \x -> \y -> if x then y else x
+
 -- ~ d) 
 twice f x = f (f x )
 
+twice' f = \x -> f (f x)
+
+twice'' = \f -> \x -> f (f x)
+
 -- ~ e) 
-flip f x y = f y x
+flip2 f x y = f y x
+
+flip2' = \f -> \x -> \y -> f y x
 
 -- ~ f) 
 inc = (+1)
+
+inc' = \x -> x+1
+
     
 -- ~ Ejercicio 7: Pasar de notación lambda a notación Haskell
 
@@ -194,9 +214,10 @@ alpha' x = x
 -- ~ (puede suponer que sqrt :: Float -> Float)
 
 -- ~ a) 
+-- ~ modulus :: [Double] -> Double segun GHCI, why not Float?
 modulus = sqrt . sum . map (^2)
 
--- ~ b) 
+-- ~ b) vmod :: [[Double]] -> [Double]
 vmod []       = []
 vmod (v : vs) = modulus v : vmod vs
     
@@ -220,15 +241,20 @@ type NumBin = [Bool]
 
 -- ~ a) divisors, que dado un entero positivo x devuelve la lista de los divisores de x 
 -- ~ (y la lista vacı́a si el entero no es positivo).
+divisors n = [ x | x <- [1..n], (mod n x) == 0 ]
 
 -- ~ b) matches, que dados un entero x y una lista de enteros descarta de la lista los 
 -- ~ elementos distintos a x .
+matches x xs = [y | y <- xs, y == x]
 
 -- ~ c) cuadruplas, que dado un natural n, devuelve las cuadruplas (a, b, c, d) 
 -- ~ con 0 < a, b, c, d <= n que cumplen a ^ 2 + b ^ 2 = c ^ 2 + d ^ 2.
+cuadrupla n = [(a,b,c,d) | a <-[0..n], b<-[0..n], c<-[0..n], d<-[0..n], a^2 + b^2 == c^2 + d^2]
 
 -- ~ d) unique, que dada una lista xs de enteros, devuelve la lista con los elementos no repetidos de xs.
 -- ~ Por ejemplo, unique [1, 4, 2, 1, 3] = [1, 4, 2, 3].
+unique xs = [x | (x,i) <- zip xs [0..], not (elem x (take i xs))]
+
 
 -- ~ Ejercicio 14: El producto escalar de dos listas de enteros de igual longitud es la suma 
 -- ~ de los productos de los elementos sucesivos (misma posición) de ambas listas. Usando listas 
