@@ -173,12 +173,14 @@ alpha' x = x
 -- ~ Determinar el tipo de h e indicar cuáles de las siguientes definiciones de h 
 -- ~ son equivalentes a la dada:
 
--- ~ h = f . g
--- ~ h x = f . (g x )
--- ~ h x y = (f . g) x y
+-- h :: a -> b -> d
+
+-- ~ h = f . g => h x y = (f.g) x y =(por def de .)=> f (g x) y  ESTO ESTA MAL
+-- ~ h x = f . (g x ) => h x y = f . (g x) y () =(por def de .)=> f ((g x) y) = f (g x y) = h x y CORRECTO
+-- ~ h x y = (f . g) x y VER PRIMER ITEM
 
 -- ~ Dar el tipo de la funcion (.)
-
+-- (.) :: (b -> c) -> (a -> b) -> a -> c
 
 -- ~ Ejercicio 9: La función zip3 zipea 3 listas. Dar una definición recursiva de la función 
 -- ~ y otra definición con el mismo tipo que utilice la función zip. ¿Qué ventajas y desventajas 
@@ -200,27 +202,37 @@ zip3' (x:xs) (y:ys) (z:zs) = (x,y,z) : (zip3' xs ys zs)
 
 -- ~ Ejercicio 10: Indicar bajo qué suposiciones tienen sentido las siguientes ecuaciones. 
 -- ~ Para aquellas que tengan sentido, indicar si son verdaderas y en caso de no serlo modificar 
--- ~ su lado derecho para que resulten verdaderas:
+-- ~ su lado derecho para que resulten verdaderas: (ver carpeta de clase, están resueltos ahí)
 
 -- ~ a) [[]] ++ xs = xs
+-- ~ [[]] ++ xs = []:xs con xs :: [[a]]
 
 -- ~ b) [[]] ++ xs = [xs]
+-- ~ Idem a
 
 -- ~ c) [[]] ++ xs = [] : xs
+-- ~ Correcto si xs :: [[a]]
 
 -- ~ d) [[]] ++ xs = [[], xs]
+-- ~ Idem a
 
 -- ~ e) [[]] ++ [xs] = [[], xs]
+-- ~ Correcto si xs :: [a]
 
 -- ~ f) [[]] ++ [xs] = [xs]
+-- ~ idem e
 
 -- ~ g) [] ++ xs = [] : xs
+-- ~ [] ++ xs = xs si xs :: [a]
 
 -- ~ h) [] ++ xs = xs
+-- ~ Correcto si xs :: [a]
 
 -- ~ i) [xs] ++ [] = [xs]
+-- ~ Correcto si xs :: a
 
 -- ~ j) [xs] ++ [xs] = [xs, xs]
+-- ~ Correcto si xs :: a
 
 
 -- ~ Ejercicio 11: Inferir, de ser posible, los tipos de las siguientes funciones:
@@ -237,7 +249,7 @@ vmod (v : vs) = modulus v : vmod vs
 
 -- ~ Ejercicio 12: Dado el siguiente tipo para representar números binarios:
 
-type NumBin = [Bool]
+type NumBin = [Bool] 
 
 -- ~ donde el valor False representa el número 0 y True el 1. Definir las siguientes operaciones 
 -- ~ tomando como convención una representación Little-Endian (i.e. el primer elemento de las 
@@ -264,11 +276,20 @@ sumBin [] (x:xs) acum = if (xor x acum) then (True:xs) else False : (sumBin [] x
 sumBin (x:xs) (y:ys) acum = (xor acum (xor x y)) : (sumBin xs ys (acumular x y acum))
 
 -- ~ b) producto binario
-
+productoBinario :: NumBin -> NumBin -> NumBin
+productoBinario _ [] = []
+productoBinario [] _ = []
+productoBinario [False] _ = [False]
+productoBinario _ [False] = [False]
+productoBinario xs (y:ys) = if y then sumaBinaria xs (productoBinario (False:xs) ys)
+                                 else sumaBinaria [False] (productoBinario (False:xs) ys)
 
 -- ~ c) cociente y resto de la división por dos
+cociente :: NumBin -> NumBin
+cociente = tail 
 
-
+modBin :: NumBin -> NumBin
+modBin (x:xs) = [x]
 -- ~ Ejercicio 13: Definir las siguientes funciones usando listas por comprensión:
 
 -- ~ a) divisors, que dado un entero positivo x devuelve la lista de los divisores de x 
