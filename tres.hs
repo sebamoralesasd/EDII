@@ -111,9 +111,56 @@ concatCL EmptyCL = EmptyCL
 concatCL (CUnit xs) = xs
 concatCL (Consnoc ls xss rs) = (concatdosCL (concatdosCL ls (concatCL xss)) rs)
 
--- ~ 4)
+-- ~ 4)Dado el siguiente tipo de dato:
+data Aexp = Num Int | Prod Aexp Aexp | Div Aexp Aexp
+--data Maybe a = Nothing | Just a
 
--- 5) Dada las siguientes representaciones de árboles generales y de árboles binarios
+-- ~ a) Defina un evaluador eval :: Aexp → Int. ¿Cómo maneja los errores de división por 0?
+eval :: Aexp -> Int
+eval (Num a)    = a
+eval (Prod a b) = (eval a) * (eval b)
+eval (Div a b)  = div (eval a) (eval b)
+
+-- ~ b) Defina un evaluador seval :: Aexp → Maybe Int.
+seval :: Aexp -> Maybe Int
+seval (Num a)    = Just a
+seval (Prod a b) = case (seval a, seval b) of
+                        (Nothing, Just v2)     -> Nothing
+                        (Just v1, Nothing)     -> Nothing
+                        ((Just v1), (Just v2)) -> Just (v1 * v2)
+                        
+seval (Div a b)  = case (seval a, seval b) of
+                        (Nothing, Just v2)     -> Nothing
+                        (Just v1, Nothing)     -> Nothing
+                        ((Just v1), (Just v2)) -> if (v2 == 0) 
+                                                  then Nothing 
+                                                  else Just (div v1 v2)
+
+-- ~ 5)Si un árbol binario es dado como un nodo con dos subárboles idénticos 
+-- ~ se puede aplicar la técnica sharing para que los subárboles sean representados 
+-- ~ por el mismo árbol. Definir las siguientes funciones de manera que se puedan
+-- ~ compartir la mayor cantidad posible de elementos de los árboles creados:
+data Tree a = HojaTree | NodoTree (Tree a) a (Tree a) deriving Show
+
+-- ~ a) completo :: a → Int → Tree a, tal que dado un valor x de tipo a y un entero d,
+-- ~ crea un árbol binario completo de altura d con el valor x en cada nodo.
+completo :: a -> Int -> Tree a
+completo valor 0           = HojaTree
+completo valor profundidad = let subarbol = (completo valor (profundidad - 1))
+                             in (NodoTree subarbol valor subarbol)
+
+-- ~ b) balanceado ::a → Int → Tree a, tal que dado un valor x de tipo a y un entero n, 
+-- ~ crea un árbol binario balanceado de tamaño n, con el valor x en cada nodo.
+balanceado :: a -> Int -> Tree a
+balanceado valor 0    = HojaTree
+balanceado valor 1    = NodoTree HojaTree valor HojaTree
+balanceado valor prof = if (even prof) then let subarbol = (balanceado valor (div prof 2))
+                                            in (NodoTree subarbol valor subarbol)
+                                       else let subI = (balanceado valor ((div prof 2)+1))
+                                                subD = (balanceado valor (div prof 2))
+                                            in (NodoTree subI valor subD)
+
+-- 6) Dada las siguientes representaciones de árboles generales y de árboles binarios
 
 data GenTree a = EmptyG | NodeG a [GenTree a]
 
@@ -132,14 +179,12 @@ de n, si existiese (observar que de esta forma, el hijo derecho de la raı́z es
 g2btAux :: GenTree a -> [GenTree a] -> BinTree a
 g2btAux (NodeG a []) []         = NodeB EmptyB a EmptyB
 g2btAux (NodeG a []) (x:xs)     = NodeB EmptyB a (g2btAux x xs)
-g2btAux (NodeG a [x:xs]) []     = NodeB (g2btAux x xs) a EmptyB
-g2btAux (NodeG a [x:xs]) (y:ys) = NodeB (g2btAux x xs) a (g2btAux y ys)
+g2btAux (NodeG a (x:xs)) []     = NodeB (g2btAux x xs) a EmptyB
+g2btAux (NodeG a (x:xs)) (y:ys) = NodeB (g2btAux x xs) a (g2btAux y ys)
 
 g2bt :: GenTree a -> BinTree a
 g2bt EmptyG = EmptyB
 g2bt (NodeG a lista) = g2btAux (NodeG a lista) []
-
--- ~ 6)
 
 -- 7) Definir las siguientes funciones sobre árboles binarios de búsqueda (bst):
 
@@ -163,3 +208,10 @@ checkBST (Nodo Hoja v Hoja) = True
 checkBST (Nodo l v Hoja)    = (v >= maximumBST l) && (checkBST l)
 checkBST (Nodo Hoja v r)    = (v <= minimumBST r) && (checkBST r)
 checkBST (Nodo l v r)       = (v <= minimumBST r) && (checkBST r) && (v >= maximumBST l) && (checkBST l)
+
+
+-- ~ 8)
+
+-- ~ 9)
+
+-- ~ 10)
