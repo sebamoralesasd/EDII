@@ -3,7 +3,7 @@ module Tp1 where
 {-
 Integrantes: 
 Ignacio Sebastián Moliné; Legajo M-6466/1
-Sebastián Morales       ; Legajo M-
+Sebastián Morales       ; Legajo M-6501/3
 -}
 
 -- ~ k := la clave en este nivel
@@ -35,7 +35,7 @@ t = Node 'r' Nothing E (Node 'e' (Just 16) (Node 'a' Nothing E (Leaf 's' 1) E)
  -- ~ devuelve el valor asociado a una clave.
 search :: Ord k => [k] -> TTree k v -> Maybe v
 search _ E                      = Nothing
-search (x:y:xs) (Leaf k v)      = Nothing
+search (x:y:_) (Leaf _ _)      = Nothing
 search [x] (Leaf k v)           = if (x == k) then (Just v) else Nothing
 search [x] (Node k mv l m r)    = if (x == k) then mv else (if (x < k)
                                                             then search [x] l
@@ -46,3 +46,17 @@ search (x:xs) (Node k mv l m r) = if (x == k)
                                         then search (x:xs) l
                                         else search (x:xs) r)
 
+-- keys :: TTree k v → [[k ]], dado un árbol devuelve una lista
+-- ordenada con las claves del mismo.
+
+keysAux :: TTree k v -> [k] -> [[k]]
+keysAux E lk = []
+keysAux (Leaf k _) lk = [lk ++ [k]]
+keysAux (Node k mv l m r) lk = let midKey = lk ++ [k]
+                                   newKey = case mv of
+                                                 Nothing -> []
+                                                 _ -> [midKey]
+                               in (keysAux l lk) ++ newKey ++ (keysAux m midKey) ++ (keysAux r lk) 
+ 
+keys :: TTree k v -> [[k]]
+keys tree = keysAux tree []
