@@ -22,7 +22,7 @@ Sebastián Morales       ; Legajo M-
 data TTree k v = Node k (Maybe v ) (TTree k v ) (TTree k v ) (TTree k v )
                  | Leaf k v
                  | E
-                 deriving Show
+                 deriving (Show, Eq)
                  
 t = Node 'r' Nothing E (Node 'e' (Just 16) (Node 'a' Nothing E (Leaf 's' 1) E)
                                            (Node 'o' (Just 2) (Leaf 'd' 9)
@@ -39,7 +39,7 @@ t = Node 'r' Nothing E (Node 'e' (Just 16) (Node 'a' Nothing E (Leaf 's' 1) E)
 -- ~ Ejercicio 1) search :: Ord k ⇒ [k ] → TTree k v → Maybe v 
  -- ~ devuelve el valor asociado a una clave.
 search :: Ord k => [k] -> TTree k v -> Maybe v -- testeado
--- ~ search [] t                     = ...
+search [] t                     = error "Clave vacia"
 search _ E                      = Nothing
 search (x:y:xs) (Leaf k v)      = Nothing
 search [x] (Leaf k v)           = if (x == k) then (Just v) else Nothing
@@ -56,7 +56,7 @@ search (x:xs) (Node k mv l m r) = if (x == k)
 -- ~ agrega un par (clave, valor) a un árbol. Si la clave ya está en el 
 -- ~ árbol, actualiza su valor.
 insert :: Ord k => [k] -> v -> TTree k v -> TTree k v -- Testeado
--- ~ insert [] _ t = ...
+insert [] _ t                     = error "Clave vacia"
 insert [x] v E                    = Leaf x v
 insert [x] v (Leaf k v')          = if (x == k) 
                                     then Leaf k v 
@@ -88,9 +88,9 @@ insert (x:xs) v (Node k mv l m r) = if (x == k)
 
 -- ~ Ejercicio 5) Dar una instancia de la clase Dic para el tipo de datos TTree k v .
 
-class Dic k v d | d -> k v where
-    vacio    :: d
-    insertar :: Ord k => k -> v -> d -> d
-    buscar   :: Ord k => k -> d -> Maybe v
-    eliminar :: Ord k => k -> d -> d
-    claves   :: Ord k => d -> [[k]]
+-- ~ class Dic k v d | d -> k v where
+    -- ~ vacio    :: d
+    -- ~ insertar :: Ord k => k -> v -> d -> d
+    -- ~ buscar   :: Ord k => k -> d -> Maybe v
+    -- ~ eliminar :: Ord k => k -> d -> d
+    -- ~ claves   :: Ord k => d -> [[k]]
