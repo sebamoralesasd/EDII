@@ -1,8 +1,8 @@
-module Tp1 where
-
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
+module Tp1 where
+
 
 {-
 Integrantes: 
@@ -88,9 +88,16 @@ insert (x:xs) v (Node k mv l m r) = if (x == k)
 
 -- ~ Ejercicio 5) Dar una instancia de la clase Dic para el tipo de datos TTree k v .
 
--- ~ class Dic k v d | d -> k v where
-    -- ~ vacio    :: d
-    -- ~ insertar :: Ord k => k -> v -> d -> d
-    -- ~ buscar   :: Ord k => k -> d -> Maybe v
+class Dic k v d | d -> k v where
+    vacio    :: d
+    insertar :: Ord k => k -> v -> d -> d
+    buscar   :: Ord k => k -> d -> Maybe v
     -- ~ eliminar :: Ord k => k -> d -> d
-    -- ~ claves   :: Ord k => d -> [[k]]
+    -- ~ claves   :: Ord k => d -> [k]
+
+instance Ord k => Dic [k] v (TTree k v) where
+    vacio = E
+    insertar = insert
+    buscar = search 
+    -- ~ eliminar = delete
+    -- ~ claves = keys
