@@ -102,15 +102,6 @@ delete (x:xs) (Node k mv l m r)
   | x < k     = Node k mv (delete (x:xs) l) m r
   | otherwise = Node k mv l m (delete (x:xs) r)
 
-lTT :: TTree k v -> TTree k v
-lTT (Node _ _ l _ _) = l
-
-rTT :: TTree k v -> TTree k v
-rTT (Node _ _ _ _ r) = r
-
-mTT :: TTree k v -> TTree k v
-mTT (Node _ _ _ m _) = m
-
 
 -- ~ Ejercicio 4) keys :: TTree k v → [[k]]
 -- ~ dado un árbol devuelve una lista ordenada con las claves del mismo.
