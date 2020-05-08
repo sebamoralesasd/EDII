@@ -79,7 +79,7 @@ makeH x a b = if rank a >= rank b
               else N (rank a + 1) x b a
 
 -- ~ Dado l1 y l2 leftist heaps, probar que merge l1 l2 es un leftist heap
-
+-- ~ Datos:
 - El rango de un heap es la longitud de la espina derecha (el
 camino hacia la derecha hasta un nodo vacıo.)
 
@@ -88,31 +88,31 @@ mayor o igual que el de su hermano de la derecha.
 
 - Condición Heap: el valor de un nodo es menor que el valor de sus hijos
 
--- ~ Metodo charlado
+-- ~ Demostración 
 Hagamos inducción estructural en el segundo argumento de merge l1 l2
 *Si l2 es E, entonces:
 merge l1 l2 = l1 			<merge.1> 
 que es un leftist heap por hipotesis
 
 *Sea l1 = (N x a1 b1) y l2 = (N y a2 b2)
+consideremos como H.I. que (merge b1 l2) y (merge l1 b2) son leftist heaps [0]
 
 merge l1 l2 primero pregunta por el menor de los valores entre x e y.
 Sabemos que, como l1 y l2 son leftist heaps, estos valores son los minimos valores de dichos heaps.
 Entonces sabemos que min (x,y) es menor que todo elemento en los heaps a1, a2, b1 y b2   [1]
 
 En base a cual sea el menor, se llama a la funcion makeH con los argumentos correspondientes:
-	makeH x a1 (merge b1 h2) si x es menor que y	[2]
-	makeH y a2 (merge h1 b2) si y es menor que x	[2]
+	makeH x a1 (merge b1 l2) si x es menor que y	[2]
+	makeH y a2 (merge l1 b2) si y es menor que x	[2]
 
 (Lema) makeH x a b se encarga de respetar la invariante del rango:
 Dados x un elemento, a y b dos heaps, makeH pregunta cual de los rangos de a y b son mayores.
 Crea un nodo donde el heap de mayor rango va a la izquierda, el heap de menor rango va a la derecha, 
  se escribe el rango correpondiente y el valor x. 
-
-Ahora, habría que aclarar que tanto a como b son leftist heaps
- por lo que respetan tanto la condicion de ser leftist como la de ser heaps.
-Además, en la llamada de la función merge [2], el valor x que se pasa a la funcion makeH es siempre el valor minimo.
- Esto se ve claro considerando [1] 
+Vale aclarar que tanto a como b son leftist heaps por lo que respetan tanto 
+ la condicion de ser leftist como la de ser heaps. (ver [0] y [2])
+Además, en la llamada de la función merge (ver [2]), el valor x que se pasa a 
+ la funcion makeH es siempre el valor minimo. Esto se ve claro considerando [1] 
 
 Como se llama a makeH siempre con el minimo valor, la condicion de heap se respeta al construir el nuevo nodo
 pues sabemos que x e y son menores que los valores de sus hijos. 
