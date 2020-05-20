@@ -5,8 +5,6 @@ data BTree a = Empty | Node Int (BTree a) a (BTree a)
   deriving Show
 --                          Altura (Izq) value (Der)
 
--- TODO: funcion para calcular altura
-
 sizeBT :: BTree a -> Int
 sizeBT Empty = 0
 sizeBT (Node h _ _ _) = h
