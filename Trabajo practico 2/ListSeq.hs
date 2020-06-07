@@ -31,12 +31,10 @@ instance Seq [] where
         
    singletonS x = [x]
    
-   lengthS []     = 0
-   lengthS (x:xs) = 1 + lengthS xs
-       
+   lengthS = length
+   
    -- Suponemos indice valido
-   nthS (x:xs) 0 = x
-   nthS (x:xs) n = nthS xs (n-1)
+   nthS = (!!)
    
    -- No anda si llamas tabulateS, pero si tabulateSAux... Por que?
    tabulateS f nat = tabulateSAux f nat 0
@@ -51,13 +49,9 @@ instance Seq [] where
 
    appendS = (++)
 
-   takeS [] _     = []
-   takeS xs 0     = []
-   takeS (x:xs) n = x : (takeS xs (n-1))
+   takeS list amount = take amount list
            
-   dropS [] _     = []     
-   dropS xs 0     = xs     
-   dropS (x:xs) n = dropS xs (n-1)     
+   dropS list amount = drop amount list
    
    --Hubo que modificar la declaración de TreeView para que tenga Show
    showtS []  = EMPTY    
@@ -70,7 +64,7 @@ instance Seq [] where
    showlS []     = NIL
    showlS (x:xs) = CONS x xs
    
-   joinS xs = [elem | listaelem <- xs, elem <- listaelem]
+   joinS = concat
    
    
    -- Buscar un caso de prueba en el que f no sea asociativa.
@@ -88,5 +82,5 @@ instance Seq [] where
                       in (expandirS f xs xsSeq 0, xsRed)
    
    -- ~ fromList   :: [a] -> s a
-   -- como hago que esto imprima?
-   fromList xs = xs
+   -- Por que no imprime?
+   fromList = id
