@@ -33,7 +33,6 @@ instance Seq [] where
    
    lengthS = length
    
-   -- Suponemos indice valido
    nthS = (!!)
    
    -- No anda si llamas tabulateS, pero si tabulateSAux... Por que?
