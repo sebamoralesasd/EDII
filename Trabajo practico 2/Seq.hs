@@ -5,11 +5,11 @@ module Seq where
 class Seq s where
    emptyS     :: s a
    singletonS :: a -> s a
-   lengthS    :: s a -> Int 
-   nthS       :: s a -> Int -> a 
+   lengthS    :: s a -> Int
+   nthS       :: s a -> Int -> a
    tabulateS  :: (Int -> a) -> Int -> s a
-   mapS       :: (a -> b) -> s a -> s b 
-   filterS    :: (a -> Bool) -> s a -> s a 
+   mapS       :: (a -> b) -> s a -> s b
+   filterS    :: (a -> Bool) -> s a -> s a
    appendS    :: s a -> s a -> s a
    takeS      :: s a -> Int -> s a
    dropS      :: s a -> Int -> s a
@@ -20,5 +20,5 @@ class Seq s where
    scanS      :: (a -> a -> a) -> a -> s a -> (s a, a)
    fromList   :: [a] -> s a
 
-data TreeView a t = EMPTY | ELT a | NODE t t
-data ListView a t = NIL | CONS a t
+data TreeView a t = EMPTY | ELT a | NODE t t deriving Show
+data ListView a t = NIL | CONS a t deriving Show
