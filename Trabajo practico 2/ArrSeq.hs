@@ -66,8 +66,7 @@ joinAS :: A.Arr (A.Arr a) -> A.Arr a
 joinAS = A.flatten
 
 
--- Función de contracción para reduce y para scan en arreglos
--- de tamaño impar
+-- Función de contracción para reduce y para scan
 contractAS :: (a -> a -> a) -> A.Arr a -> Int -> A.Arr a
 contractAS f ar n = tabulateAS (\i ->
   if i == div n 2
@@ -80,12 +79,6 @@ reduceAS f e ar
   | isSingleton ar = f e (firstAS ar)
   | otherwise = let arCont = contractAS f ar (lengthAS ar)
        in reduceAS f e arCont
-
--- Función de contracción para scan en arreglos de tamaño par
-contractParAS :: (a -> a -> a) -> A.Arr a -> Int -> A.Arr a
-contractParAS f ar n = tabulateAS (\i -> let a = nthAS ar (2*i)
-                                             b = nthAS ar (2*i + 1)
-                                         in f a b) (div n 2)
 
 -- Función de expansión
 expandAS :: (a -> a -> a) -> A.Arr a -> A.Arr a -> Int -> A.Arr a
@@ -102,9 +95,7 @@ scanAS f e ar
   | isSingleton ar = let el = firstAS ar
                      in (singletonAS e, f e el)
   | otherwise = let nElem = lengthAS ar
-                    arCont = if mod nElem 2 == 0
-                               then contractParAS f ar nElem
-                               else contractAS f ar nElem
+                    arCont = contractAS f ar nElem
                     (r, t) = scanAS f e arCont
                 in (expandAS f r ar nElem, t)
 
