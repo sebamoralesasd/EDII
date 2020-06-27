@@ -2,8 +2,8 @@ module Seis where
 
 import Seq
 import ArrSeq
-import Numeric.Natural
 
+-- Ej 1
 divF :: Int -> Int -> Float
 divF a b = fromIntegral a / fromIntegral b
 
@@ -32,7 +32,23 @@ mayores ar =
       unos = supera arB maxE nElem
   in reduceS (+) 0 unos
 
-type Nat = Natural
 
--- fibSeq :: (Seq s) => Nat -> s Nat
--- fibSeq = undefined
+-- Ej 2
+type Mat = (Int, Int, Int, Int)
+
+fibMat :: Mat
+fibMat = (1,1,        -- (a, b,
+          1,0)        --  c, d)
+
+multMat :: Mat -> Mat -> Mat
+multMat (a,b,c,d) (p,q,r,s) =
+  (a*p + b*r, a*q + b*s,
+   c*p + d*r, c*q + d*s)
+
+getFib :: Mat -> Int
+getFib (fi,_,_,_) = fi
+
+fibSeq :: (Seq s) => Int -> s Int
+fibSeq n = let ar = tabulateS (\_ -> fibMat) n
+               matSeq = fst $ scanS (multMat) fibMat ar
+           in mapS (getFib) matSeq
