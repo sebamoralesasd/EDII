@@ -211,7 +211,67 @@ checkBST (Nodo l v r)       = (v <= minimumBST r) && (checkBST r) && (v >= maxim
 
 
 -- ~ 8)
+data Bin a = Hoja | Nodo (Bin a) a (Bin a)
+
+memberAux :: (Num a, Ord a) => a -> Bin a -> a -> Bool
+memberAux valor Hoja candidato = valor == candidato
+memberAux valor (Nodo l a r) candidato | valor <= a = memberAux valor l a
+                                       | otherwise  = memberAux valor r candidato
+
+member :: (Num a, Ord a) => a -> Bin a -> Bool
+member valor arbol = memberAux valor arbol valor
 
 -- ~ 9)
+data Color = R | B
+data RBT a = E | T Color (RBT a) a (RBT a)
+
+-- ~ INV1 Ningun nodo rojo tiene hijos rojos
+-- ~ INV2 Todos los caminos a la raíz a una hoja tienen el mismo numero de nodos negros (llamado altura negra)
+
+insert :: Ord a => a -> RBT a -> RBT a
+insert x t = makeBlack (ins x t)
+  where ins x E                       = T R E x E
+        ins x (T c l y r) | x < y     = balanceL c (ins x l) y r
+                          | x > y     = balanceR c l y (ins x r)
+                          | otherwise = T c l y r
+        makeBlack E           = E
+        makeBlack (T _ l x r) = T B l x r
+        
+
+balanceL :: Color -> RBT a -> a -> RBT a -> RBT a
+balanceL B (T R (T R a x b) y c) z d = T R (T B a x b) y (T B c z d)
+balanceL B (T R a x (T R b y c)) z d = T R (T B a x b) y (T B c z d)
+balanceL c l a r                     = T c l a r
+
+balanceR :: Color -> RBT a -> a -> RBT a -> RBT a
+balanceR B a x (T R (T R b y c) z d) = T R (T B a x b) y (T B c z d)
+balanceR B a x (T R b y (T R c z d)) = T R (T B a x b) y (T B c z d)
+balanceR c l a r                     = T c l a r
 
 -- ~ 10)
+type Rank = Int
+data Heap a = E | N Rank a (Heap a) (Heap a)
+
+rank :: Heap a -> Rank
+rank E = 0
+rank (N r _ _ _ ) = r
+
+makeH :: Ord a => a -> Heap a -> Heap a -> Heap a
+makeH x a b = if (rank a >= rank b) then N (rank b+1) x a b
+                                    else N (rank a+1) x b a
+
+
+merge :: Ord a => Heap a -> Heap a -> Heap a
+merge h1 E = h1
+merge E h2 = h2
+merge h1@(N _ x a1 b1) h2@(N _ y a2 b2) = if x<= y then makeH x a1 (merge b1 h2)
+                                                   else makeH y a2 (merge h1 b2)
+
+fromHeapList :: Ord a => [Heap a] -> [Heap a]
+fromHeapList [] = []
+fromHeapList [x] = [x]
+fromHeapList (x:y:xs) = fromHeapList ((merge x y):(fromHeapList xs))
+
+fromList :: [a] -> Heap a
+fromList [] = E
+fromList xs = let [x] where x = fromHeapList (map (\x -> N 1 E x E) xs) in x

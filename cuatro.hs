@@ -5,7 +5,7 @@ tad List (A:Set) where
     import Bool
     nil: List A
     cons: A -> List A -> List A
-    null: List A
+    null: List A -> Bool
     head: List A -> A
     tail: List A -> List A
     
@@ -85,8 +85,9 @@ resta b vacio = b
 resta b (insertar x c) = borrar x (resta b c)
 
 -- ~ Agregar choose
--- ~ Esto generaría inconsistencia con la especificación, pues uno no se mantiene un orden al insertar elementos en un conjunto, 
--- ~ por lo que la función choose no sabría cual es el elemento que debería arrojar como resultado
+-- ~ Esto generaría inconsistencia con la especificación, pues uno no mantiene un orden al insertar elementos en un conjunto, 
+-- ~ por lo que la función choose no sabría cual es el elemento que debería arrojar como resultado. Por ejemplo:
+x = choose (insertar x (insertar y c)) = choose (insertar y (insertar x c)) = y --Genera una falla en la especificación.
 
 -- ~ Ejercicio 4)
 tad PQ (A:Set, B:Ordered Set) where
@@ -151,8 +152,8 @@ size (join L Nothing R) = size L + size R
 size (join L (Just x) R) = 1 + size L + size R
 
 case expose t where
-Nothing -> empty
-Just (l,x,r) -> join l (Just x) r
+     empty             -> Nothing 
+     join l (Just x) r -> Just (l,x,r)
 
 -- ~ Ejercicio 6)
 Queremos probar que (uncurry zip) ° unzip = id
@@ -296,12 +297,59 @@ join ( join(x:xs) : (map join xss) ) = <reinsertamos el primer elemento en el ma
 join (map join ((x:xs):xss))
 
 -- ~ Ejercicio 12) HACER
- 
- 
- 
- 
- 
- 
+data Bin a = Hoja | Nodo (Bin a) a (Bin a)
+
+inorder :: Bin a -> [a]
+inorder Hoja            = []
+inorder (Nodo l dato r) =  inorder l ++ [dato] ++ inorder r
+
+
+insert ::  Ord a => a -> Bin a -> Bin a
+insert dato Hoja 	     = Nodo Hoja dato Hoja
+insert dato (Nodo l a r) | dato=<a   = Nodo (insert dato l) a r
+                         | otherwise = Nodo l a (insert dato r)
+
+
+--t es un BST si es un Bin tal que:
+--  t es hoja
+--  t es Nodo l a r , donde l y r son BST; a >= y para todo y en l; a < y para todo y en r
+
+-- ~ a) Probar que si t es un BST, entonces insert x t es un BST
+Veamos por inducción estructural que insert x t es un BST
+
+caso t = Hoja
+insert x t = insert x Hoja = Nodo Hoja dato Hoja
+Esto es trivialmente un BST pues ambas ramas son hojas y solo hay un dato en el medio.
+
+caso t = Nodo l a r 
+
+HI:= insert x l, insert x r son BST
+
+insert x t = insert x (Nodo l a r) [1]
+
+Analicemos que ocurre al comparar a con x
+x <= a) insert x (Nodo l a r) = Nodo (insertar x l) a r
+por HI sabemos que (insertar x l) es un BST, r es un BST y la condicion de orden se respeta pues ya hicimos la comparacion x <= a
+
+x > a) el caso es analogo
+
+Por lo tanto, insert x t resulta en un BST.
+
+-- ~ b) Probar que si t es un BST, entonces inorder t es una lista ordenada
+veamos por induccion estructural que inorder t es un BST
+
+caso t = Hoja
+inorder t = inorder Hoja = [] trivialmente ordenado
+
+caso t = Node l a r
+HI:= inorder l, inorder r son listas ordenadas
+inorder t = inorder Node l a r = (inorder l) ++ [a] ++ (inorder r)
+
+como inorder l nos da una lista ordenada, y sabemos que todo elemento de l es menor que a, al concatenar [a] a la derecha la lista sigue siendo ordenada.
+del mismo modo, como inorder r es una lista ordenada con elementos mayores que a, al concatenar a la derecha de [a] mantenemos una lista ordenada.
+
+por lo tanto, inorder t resulta en una lista ordenada. 
+
 -- ~ Ejercicio 13)
 type Rank = Int
 data Heap a = E | N Rank a (Heap a) (Heap a)
@@ -309,7 +357,7 @@ data Heap a = E | N Rank a (Heap a) (Heap a)
 merge :: Ord a ⇒ Heap a → Heap a → Heap a
 merge h1 E                              = h1
 merge E h2                              = h2
-merge h1 @(N x a1 b1 ) h2 @(N y a2 b2 ) =
+merge h1 @(N r1 x a1 b1 ) h2 @(N r2 y a2 b2 ) =
         if x <= y then makeH x a1 (merge b1 h2)
                   else makeH y a2 (merge h1 b2)
                   
@@ -338,7 +386,7 @@ Hagamos inducción estructural en el segundo argumento de merge l1 l2
 merge l1 l2 = l1 			<merge.1> 
 que es un leftist heap por hipotesis
 
-*Sea l1 = (N x a1 b1) y l2 = (N y a2 b2)
+*Sea l1 = (N r1 x a1 b1) y l2 = (N r2 y a2 b2)
 
 merge l1 l2 primero pregunta por el menor de los valores entre x e y.
 Sabemos que, como l1 y l2 son leftist heaps, estos valores son los minimos valores de dichos heaps.
