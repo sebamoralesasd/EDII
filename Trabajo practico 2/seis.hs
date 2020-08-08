@@ -70,24 +70,6 @@ fibSeq n = let ar = tabulateS (\_ -> fibMat) n
                matSeq = fst $ scanS (multMat) fibMat ar
            in mapS (getFib) matSeq
 
--- Ej 4
-data Paren = Open | Close
-type Tupla = (Int, Int)
-
-parenVal :: Tupla
-parenVal = (0,0)
-
-parenBase :: Paren -> Tupla
-parenBase Open = (0,1)
-parenBase Close = (1,0)
-
-parenCombine :: Tupla -> Tupla -> Tupla
-parenCombine (cI,aI) (cD,aD) = (max 0 (cD-aI+cI), max 0 (aI-cD+aD))
-
-matchP :: (Seq s) => s Paren -> Tupla
-matchP s = dyc s parenCombine parenVal parenBase
-
-
 -- Ej 3
 reverseSeq :: (Seq s) => s a -> s a
 reverseSeq ar = let n = lengthS ar
@@ -105,3 +87,54 @@ aguaHist hist =
   let (maxL, maxR) = maxAgua hist
       agua = difAgua hist maxL maxR
   in reduceS (+) 0 agua
+
+
+-- Ej 4
+data Paren = Open | Close
+type Tupla = (Int, Int)
+
+-- a
+parenVal :: Tupla
+parenVal = (0,0)
+
+parenBase :: Paren -> Tupla
+parenBase Open = (0,1)
+parenBase Close = (1,0)
+
+parenCombine :: Tupla -> Tupla -> Tupla
+parenCombine (cI,aI) (cD,aD) = (max 0 (cD-aI+cI), max 0 (aI-cD+aD))
+
+matchP :: (Seq s) => s Paren -> Tupla
+matchP s = dyc s parenCombine parenVal parenBase
+
+matchParen :: (Seq s) => s Paren -> Bool
+matchParen s = (0,0) == matchP s
+
+
+-- b
+parenValScan :: Paren -> Int
+parenValScan Open = 1
+parenValScan Close = -1
+
+matchParenScan :: (Seq s) => s Paren -> Bool
+matchParenScan s = let sVal = mapS parenValScan s
+                       (ss, r) = scanS (+) 0 sVal
+                       ssBool = mapS (\x-> x>=0) ss
+                   in r==0 && (reduceS (&&) True ssBool)
+
+
+-- 6
+conSig :: (Seq s) => s Int -> s (Int, s Int)
+conSig ar = tabulateS (\i ->
+                        ((nthS ar i), (dropS ar (i+1)))) (lengthS ar)
+
+getMultiplos :: (Seq s) => (Int, s Int) -> Int
+getMultiplos (a, se) =
+  let m = mapS (\i -> if (mod a i) == 0 then 1 else 0) se
+  in reduceS (+) 0 m
+
+multiplos :: (Seq s) => s Int -> Int
+multiplos ar =
+  let conS = conSig ar
+      totM = mapS (getMultiplos) conS
+  in reduceS (+) 0 totM
