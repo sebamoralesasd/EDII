@@ -106,6 +106,8 @@ poner (e,p) (poner (e',p') q) = poner (e',p') (poner (e,p) q)
 poner (e, p) (poner (e', p) q) = (poner (e', p) q)  --Hay que corregir esto pues no pueden ocurrir estas dos
 --Hablar con Guido por Jitsi?
 
+poner (p1,v1) (poner (p2,v2) q) = if p1<>p2 then conmutan, else idem entrada
+
 maxPriority (e,p) vacia = (e,p)
 maxPriority (e,p) poner((e',p') q) = if p>p' then maxPriority (e,p) q else maxPriority (e',p') q
 
@@ -124,9 +126,13 @@ union (poner (e,p) q) q' = union q (poner (e,p) q')
 -- ~ Especificacion usando conjuntos:
 vacia = {}
 
-poner (e,p) {(e1,p1), ..., (en,pn)} = {(e,p)} U {(e1,p1), ..., (en,pn)} si e!=ei, p!=pi para todo i en [1..n]
-poner (ex,px) {(e1,p1), ..., (en,pn)} = {(ex, max(px,pi))} U {(e1,p1), ..., (e(i-1), p(i-1)), (e(i+1), p(i+1)), ..., (en,pn)} si ex==e1 para algun i en [1..n]
-poner (e,p) {(e1,p1), ..., (en,pn)} = {(e1,p1), ..., (en,pn)} si p=pi para algun i en [1..n]
+-- ~ poner (e,p) {(e1,p1), ..., (en,pn)} = {(e,p)} U {(e1,p1), ..., (en,pn)} si e!=ei, p!=pi para todo i en [1..n]
+-- ~ poner (ex,px) {(e1,p1), ..., (en,pn)} = {(ex, max(px,pi))} U {(e1,p1), ..., (e(i-1), p(i-1)), (e(i+1), p(i+1)), ..., (en,pn)} si ex==e1 para algun i en [1..n]
+-- ~ poner (e,p) {(e1,p1), ..., (en,pn)} = {(e1,p1), ..., (en,pn)} si p=pi para algun i en [1..n]
+
+PQ A = {(p,v) | p in P, v in A} donde no hay dos elementos co la misma prioridad
+
+poner (p1,v1) pq = {(p1,v1)} union pq
 
 primero {(e1,p1), ..., (en,pn)} = (e,p) donde p>=pi para todo i en [1..n]
 
